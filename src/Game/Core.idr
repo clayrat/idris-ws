@@ -40,16 +40,16 @@ I : Game
 I = Gam {i=Nil} (\v => void v)
 
 public export
-sumfun : {0 a, b : Type} -> {0 c : Either a b -> Type} ->
+copair : {0 a, b : Type} -> {0 c : Either a b -> Type} ->
          (f : (x : a) -> c (Left x)) ->
          (g : (x : b) -> c (Right x)) ->
          (x : Either a b) -> c x
-sumfun f g (Left x)  = f x
-sumfun f g (Right y) = g y
+copair f g (Left x)  = f x
+copair f g (Right y) = g y
 
 public export
 prod : Game -> Game -> Game
-prod (Gam {i} f) (Gam {i=j} g) = Gam {i = Plus i j} (sumfun f g)
+prod (Gam {i} f) (Gam {i=j} g) = Gam {i = Plus i j} (copair f g)
 
 omg : Game -> Game
 omg (Gam {i} f) = Gam {i = Ntm i} (\x => f (snd x))
@@ -93,6 +93,7 @@ data Mor : Game -> Game -> Type where
         ((j : Mov b) -> Mor (rest b j) (rest a (h j))) ->
         Mor a b
 
+public export
 morId : {0 g : Game} -> Mor g g
 morId {g = Gam f} = Sim id (\i => morId {g = f i})
 
@@ -106,6 +107,7 @@ data Iso : Game -> Game -> Type where
 isoId : {0 g : Game} -> Iso g g
 isoId = Bsm morId morId
 
+public export
 isoTrans : {0 a, b, c : Game} -> Iso a b -> Iso b c -> Iso a c
 isoTrans (Bsm s s') (Bsm r r') = Bsm (morTrans s r) (morTrans r' s')
 
